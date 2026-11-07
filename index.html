@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ab-av1 GUI</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <h1>ab-av1 GUI</h1>
+        <div class="status">
+          <span>ab-av1 可执行文件：</span>
+          <input id="abav1Path" class="path-input" placeholder="留空则从 PATH 查找 ab-av1 或 ab-av1.exe" />
+          <button id="testAbav1" class="btn">测试</button>
+          <span id="abav1Status" class="status-text"></span>
+        </div>
+      </header>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="auto">自动编码（推荐）</button>
+        <button class="tab" data-tab="crf">CRF 搜索</button>
+        <button class="tab" data-tab="sample">样本编码</button>
+        <button class="tab" data-tab="encode">直接编码</button>
+        <button class="tab" data-tab="vmaf">VMAF 对比</button>
+        <button class="tab" data-tab="log">日志</button>
+      </nav>
+
+      <main class="main">
+        <section class="tab-panel active" id="panel-auto">
+          <div class="panel">
+            <div class="row">
+              <label>输入文件</label>
+              <input id="auto-input" class="flex" readonly placeholder="选择视频文件..." />
+              <button id="auto-browse-input" class="btn">浏览...</button>
+            </div>
+            <div class="row">
+              <label>输出文件</label>
+              <input id="auto-output" class="flex" readonly placeholder="（可选，默认 ab-av1 自动命名）" />
+              <button id="auto-browse-output" class="btn">浏览...</button>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>预设（preset）</label>
+                <select id="auto-preset">
+                  <option value="6">6</option>
+                  <option value="8" selected>8</option>
+                  <option value="10">10</option>
+                  <option value="12">12</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>最小 VMAF（--min-vmaf）</label>
+                <input id="auto-minvmaf" type="number" value="95" min="0" max="100" step="1" />
+              </div>
+              <div class="field">
+                <label>编码器（可选）</label>
+                <input id="auto-encoder" placeholder="svt-av1（默认）" />
+              </div>
+            </div>
+            <div class="row">
+              <label>额外参数</label>
+              <input id="auto-extra" class="flex" placeholder="如 --vmaf-model-version v0.6.1" />
+            </div>
+            <div class="actions">
+              <button id="auto-start" class="btn primary">开始自动编码</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-crf">
+          <div class="panel">
+            <div class="row">
+              <label>输入文件</label>
+              <input id="crf-input" class="flex" readonly />
+              <button id="crf-browse-input" class="btn">浏览...</button>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>预设</label>
+                <select id="crf-preset">
+                  <option value="6">6</option>
+                  <option value="8" selected>8</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>最小 VMAF</label>
+                <input id="crf-minvmaf" type="number" value="95" />
+              </div>
+            </div>
+            <div class="row">
+              <label>额外参数</label>
+              <input id="crf-extra" class="flex" />
+            </div>
+            <div class="actions">
+              <button id="crf-start" class="btn primary">开始搜索</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-sample">
+          <div class="panel">
+            <div class="row">
+              <label>输入文件</label>
+              <input id="sample-input" class="flex" readonly />
+              <button id="sample-browse-input" class="btn">浏览...</button>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>预设</label>
+                <select id="sample-preset">
+                  <option value="8" selected>8</option>
+                  <option value="6">6</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>CRF</label>
+                <input id="sample-crf" type="number" value="30" />
+              </div>
+            </div>
+            <div class="actions">
+              <button id="sample-start" class="btn primary">开始样本编码</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-encode">
+          <div class="panel">
+            <div class="row">
+              <label>输入文件</label>
+              <input id="encode-input" class="flex" readonly />
+              <button id="encode-browse-input" class="btn">浏览...</button>
+            </div>
+            <div class="row">
+              <label>输出文件</label>
+              <input id="encode-output" class="flex" readonly />
+              <button id="encode-bpaste-output" class="btn">浏览...</button>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>预设</label>
+                <select id="encode-preset">
+                  <option value="8" selected>8</option>
+                  <option value="6">6</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>CRF</label>
+                <input id="encode-crf" type="number" value="30" />
+              </div>
+              <div class="field">
+                <label>编码器</label>
+                <input id="encode-encoder" placeholder="svt-av1" />
+              </div>
+            </div>
+            <div class="row">
+              <label>额外参数</label>
+              <input id="encode-extra" class="flex" />
+            </div>
+            <div class="actions">
+              <button id="encode-start" class="btn primary">开始编码</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-vmaf">
+          <div class="panel">
+            <div class="row">
+              <label>参考文件（原片）</label>
+              <input id="vmaf-ref" class="flex" readonly />
+              <button id="vmaf-browse-ref" class="btn">浏览...</button>
+            </div>
+            <div class="row">
+              <label>对比文件（压后）</label>
+              <input id="vmaf-dist" class="flex" readonly />
+              <button id="vmaf-browse-dist" class="btn">浏览...</button>
+            </div>
+            <div class="actions">
+              <button id="vmaf-start" class="btn primary">计算 VMAF</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-log">
+          <div class="panel" style="max-width: 100%;">
+            <div class="log-toolbar">
+              <button id="clear-log" class="btn">清空日志</button>
+              <button id="copy-log" class="btn">复制日志</button>
+            </div>
+            <pre id="log-output" class="log"></pre>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
