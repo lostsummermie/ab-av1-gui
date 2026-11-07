@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# 核心：允许机器人向仓库写入内容（也就是创建 Release）
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -29,13 +33,14 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Build the app
+      # 标准发布动作
+      - name: Build and Release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
-          releaseName: 'ab-av1-gui v__VERSION__'
-          releaseBody: 'See the assets to download this version.'
-          releaseDraft: true
+          tagName: v__VERSION__ # 自动打标签（例如 v0.1.0）
+          releaseName: 'ab-av1-gui v__VERSION__' # Release 的标题
+          releaseBody: '全新的 Windows 安装包。' # 说明文字
+          releaseDraft: false # false 表示正式发布，不藏着掖着
           prerelease: false
